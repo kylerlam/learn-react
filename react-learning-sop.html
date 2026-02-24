@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 學習 SOP | 新手到讀懂 AI 代碼</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3e;
+    --accent: #61dafb;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --danger: #f87171;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .container { max-width: 760px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 3rem; }
+  header h1 {
+    font-size: 2rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+  header p { color: var(--muted); font-size: 0.9rem; }
+
+  /* Progress */
+  .progress-bar-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 1.2rem;
+  }
+  .progress-track {
+    flex: 1; height: 8px; background: var(--border); border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+  .progress-label { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+  .progress-pct { font-weight: 700; color: var(--accent); min-width: 42px; text-align: right; font-size: 0.9rem; }
+
+  /* Phase */
+  .phase { margin-bottom: 2rem; }
+  .phase-header {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1rem; cursor: pointer; user-select: none;
+  }
+  .phase-badge {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+    padding: 0.25rem 0.65rem; border-radius: 99px; text-transform: uppercase;
+  }
+  .badge-foundation { background: rgba(97,218,251,0.15); color: var(--accent); }
+  .badge-core       { background: rgba(167,139,250,0.15); color: var(--accent2); }
+  .badge-pattern    { background: rgba(52,211,153,0.15);  color: var(--accent3); }
+  .badge-advanced   { background: rgba(245,158,11,0.15);  color: var(--accent4); }
+
+  .phase-title { font-weight: 600; font-size: 1.05rem; }
+  .phase-toggle { margin-left: auto; color: var(--muted); font-size: 0.8rem; transition: transform .2s; }
+  .phase-toggle.open { transform: rotate(180deg); }
+
+  /* Unit */
+  .unit {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 0.75rem; overflow: hidden;
+    transition: border-color .2s;
+  }
+  .unit.done { border-color: rgba(52,211,153,0.4); }
+  .unit-header {
+    display: flex; align-items: center; gap: 0.9rem;
+    padding: 0.9rem 1.2rem; cursor: pointer;
+  }
+  .unit-header:hover { background: rgba(255,255,255,0.02); }
+
+  .checkbox {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s; cursor: pointer;
+  }
+  .checkbox.checked { background: var(--accent3); border-color: var(--accent3); }
+  .checkbox svg { display: none; }
+  .checkbox.checked svg { display: block; }
+
+  .unit-title { font-weight: 500; font-size: 0.95rem; flex: 1; }
+  .unit.done .unit-title { color: var(--muted); text-decoration: line-through; }
+
+  .unit-expand { color: var(--muted); font-size: 0.75rem; transition: transform .2s; }
+  .unit-expand.open { transform: rotate(180deg); }
+
+  .unit-body {
+    padding: 0 1.2rem 1rem 3.5rem;
+    display: none;
+  }
+  .unit-body.open { display: block; }
+  .unit-body p { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.6rem; line-height: 1.6; }
+  .unit-body ul { list-style: none; }
+  .unit-body ul li {
+    color: var(--muted); font-size: 0.82rem; padding: 0.2rem 0;
+    padding-left: 1rem; position: relative; line-height: 1.5;
+  }
+  .unit-body ul li::before { content: "›"; position: absolute; left: 0; color: var(--accent); }
+
+  code {
+    background: rgba(97,218,251,0.1); color: var(--accent);
+    font-size: 0.8em; padding: 0.1em 0.4em; border-radius: 4px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .goal-tag {
+    display: inline-block; font-size: 0.72rem; padding: 0.15rem 0.5rem;
+    border-radius: 4px; margin-bottom: 0.5rem; font-weight: 600;
+    background: rgba(245,158,11,0.15); color: var(--accent4);
+  }
+
+  .reset-btn {
+    display: block; margin: 2rem auto 0; padding: 0.6rem 1.8rem;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); border-radius: 8px; cursor: pointer;
+    font-size: 0.82rem; font-family: inherit; transition: all .2s;
+  }
+  .reset-btn:hover { border-color: var(--danger); color: var(--danger); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>⚛️ React 學習 SOP</h1>
+    <p>目標：最快讀懂 AI 生成的 React 代碼 · 打勾即代表完成</p>
+  </header>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-track"><div class="progress-fill" id="fill"></div></div>
+    <span class="progress-label">已完成</span>
+    <span class="progress-pct" id="pct">0%</span>
+  </div>
+
+  <div id="app"></div>
+  <button class="reset-btn" onclick="resetAll()">🔄 重置所有進度</button>
+</div>
+
+<script>
+const data = [
+  {
+    phase: "階段一：看懂 JSX 語法",
+    badge: "foundation",
+    badgeLabel: "基礎必讀",
+    units: [
+      {
+        id: "jsx",
+        title: "JSX — 在 JS 裡寫 HTML",
+        goal: "AI 生成的組件 90% 都是 JSX，這是最高優先級",
+        desc: "JSX 是 React 的核心語法。它看起來像 HTML，但本質是 JavaScript。",
+        points: [
+          "JSX 標籤必須閉合：<img /> 而不是 <img>",
+          "只能有一個根元素，用 <> Fragment 包裹多個元素",
+          "JS 表達式用 {} 包裹：{user.name}、{count + 1}",
+          "class 要寫成 className，for 要寫成 htmlFor",
+          "注釋寫法：{/* 這是注釋 */}",
+        ]
+      },
+      {
+        id: "components",
+        title: "Function Components — 組件基本結構",
+        goal: "所有 AI 代碼都是 Function Component，必看",
+        desc: "React 組件就是一個返回 JSX 的 JavaScript 函數。命名必須大寫開頭。",
+        points: [
+          "組件名稱必須大寫，例：function Button() {}",
+          "返回值就是要渲染的 UI",
+          "一個文件通常只 export 一個主要組件",
+          "export default vs export：AI 代碼兩種都會用",
+        ]
+      },
+    ]
+  },
+  {
+    phase: "階段二：理解數據流",
+    badge: "core",
+    badgeLabel: "核心概念",
+    units: [
+      {
+        id: "props",
+        title: "Props — 從外部傳入數據",
+        goal: "搞懂 Props 才能看懂組件之間如何傳遞資料",
+        desc: "Props 是組件的「參數」，父組件透過 Props 傳數據給子組件，數據流是單向的（由上而下）。",
+        points: [
+          "Props 是唯讀的，子組件不能修改它",
+          "解構寫法：function Card({ title, desc }) {}",
+          "children 是特殊的 Prop，代表包裹的子元素",
+          "TypeScript 中必須為 Props 定義 interface",
+          "可以傳函數作為 Props（回調函數模式）",
+        ]
+      },
+      {
+        id: "state",
+        title: "useState — 組件自己的記憶",
+        goal: "State 是 React 最核心的概念，AI 代碼必定出現",
+        desc: "State 是組件內部可以改變的數據。State 變化時，組件會自動重新渲染。",
+        points: [
+          "語法：const [value, setValue] = useState(初始值)",
+          "必須用 setValue() 更新，不能直接修改 value",
+          "State 更新是異步的，不會立即生效",
+          "如果新值依賴舊值：setValue(prev => prev + 1)",
+          "State 放在需要使用它的最近公共父組件",
+        ]
+      },
+      {
+        id: "events",
+        title: "Event Handling — 響應用戶操作",
+        goal: "點擊、輸入等互動是所有 UI 的基礎",
+        desc: "React 事件與 HTML 類似，但命名用 camelCase，傳的是函數而非字串。",
+        points: [
+          "onClick={handleClick} — 傳函數，不要加 ()",
+          "如需傳參：onClick={() => handleClick(id)}",
+          "表單輸入：onChange={e => setValue(e.target.value)}",
+          "e.preventDefault() 阻止默認行為（如表單提交跳頁）",
+        ]
+      },
+    ]
+  },
+  {
+    phase: "階段三：掌握常見模式",
+    badge: "pattern",
+    badgeLabel: "必學模式",
+    units: [
+      {
+        id: "conditional",
+        title: "條件渲染 — 判斷要顯示什麼",
+        goal: "AI 生成的每個組件幾乎都有條件渲染",
+        desc: "根據狀態或 Props 的值，動態決定顯示哪些內容。",
+        points: [
+          "&& 短路：{isLoggedIn && <Dashboard />}",
+          "三元運算：{isLoading ? <Spinner /> : <Content />}",
+          "可以用 if/else 在 return 之前處理複雜邏輯",
+          "null 代表不渲染任何東西",
+        ]
+      },
+      {
+        id: "lists",
+        title: "Lists & Keys — 渲染列表數據",
+        goal: "陣列 .map() 是 AI 代碼最常見的模式之一",
+        desc: "用 .map() 把陣列轉換成 JSX 元素列表，key 是 React 追蹤元素的唯一標識。",
+        points: [
+          "語法：{items.map(item => <Item key={item.id} />)}",
+          "key 必須在同級元素中唯一",
+          "優先用 id 作為 key，不要用 index（除非列表不變）",
+          ".filter() 可和 .map() 組合：先篩選再渲染",
+        ]
+      },
+      {
+        id: "useeffect",
+        title: "useEffect — 副作用與生命週期",
+        goal: "API 調用、計時器都在這裡，AI 代碼必出現",
+        desc: "useEffect 在組件渲染後執行副作用，例如 fetch 數據、設定計時器、操作 DOM。",
+        points: [
+          "語法：useEffect(() => { /* 副作用 */ }, [依賴陣列])",
+          "[] 空陣列 = 只在組件掛載時執行一次",
+          "[count] = count 改變時重新執行",
+          "返回 cleanup 函數：return () => clearInterval(timer)",
+          "fetch 數據的標準模式：放在 useEffect 裡，結果存進 useState",
+        ]
+      },
+    ]
+  },
+  {
+    phase: "階段四：進階讀懂能力",
+    badge: "advanced",
+    badgeLabel: "進階強化",
+    units: [
+      {
+        id: "typescript",
+        title: "TypeScript 基礎 — 看懂類型標注",
+        goal: "AI 生成的代碼大多是 TypeScript，認識類型才能完全讀懂",
+        desc: "TypeScript 是加了類型的 JavaScript。重點是能看懂，不一定要一開始就會寫。",
+        points: [
+          "interface Props { name: string; age: number; }",
+          "?: 代表可選屬性：title?: string",
+          "string[] 或 Array<string> 代表字串陣列",
+          "useState<User | null>(null) — 泛型指定 State 類型",
+          "InferSelectModel、InferInsertModel 是從 DB Schema 推導類型",
+        ]
+      },
+      {
+        id: "hooks-advanced",
+        title: "其他常用 Hooks — useMemo / useCallback / useRef",
+        goal: "AI 生成性能優化代碼時出現",
+        desc: "這三個 Hook 都是為了優化性能，先能看懂用途，再深入理解原理。",
+        points: [
+          "useRef：獲取 DOM 元素 或 保存不觸發渲染的值",
+          "useMemo：快取計算結果，避免每次渲染重複計算",
+          "useCallback：快取函數，避免子組件不必要的重渲染",
+          "自定義 Hook：以 use 開頭的函數，封裝可復用的邏輯",
+        ]
+      },
+      {
+        id: "component-patterns",
+        title: "組件設計模式 — 看懂 AI 的代碼結構",
+        goal: "理解為何 AI 這樣分拆組件",
+        desc: "AI 生成的代碼通常遵守特定的架構模式，理解這些模式可以快速讀懂整體結構。",
+        points: [
+          "ui/ 目錄：純展示組件（Dumb），只接受 Props",
+          "features/ 目錄：有邏輯的組件（Smart），負責數據獲取",
+          "index.ts 桶文件：統一 export，AI 常用此模式",
+          "layout/ 目錄：頁面骨架組件，如 Navbar、Sidebar",
+          "Server vs Client Components（Next.js）：'use client' 標記",
+        ]
+      },
+    ]
+  }
+];
+
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem('react-sop-progress') || '{}'); } catch { return {}; }
+}
+function saveProgress(p) { localStorage.setItem('react-sop-progress', JSON.stringify(p)); }
+
+let progress = loadProgress();
+
+function updateProgress() {
+  const allIds = data.flatMap(ph => ph.units.map(u => u.id));
+  const done = allIds.filter(id => progress[id]).length;
+  const pct = Math.round((done / allIds.length) * 100);
+  document.getElementById('fill').style.width = pct + '%';
+  document.getElementById('pct').textContent = pct + '%';
+}
+
+function toggle(id) {
+  progress[id] = !progress[id];
+  saveProgress(progress);
+  const unit = document.querySelector(`[data-id="${id}"]`);
+  const cb = unit.querySelector('.checkbox');
+  if (progress[id]) {
+    unit.classList.add('done');
+    cb.classList.add('checked');
+  } else {
+    unit.classList.remove('done');
+    cb.classList.remove('checked');
+  }
+  updateProgress();
+}
+
+function toggleBody(id) {
+  const body = document.getElementById('body-' + id);
+  const btn = document.getElementById('expand-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+}
+
+function resetAll() {
+  if (!confirm('確定要重置所有進度嗎？')) return;
+  progress = {};
+  saveProgress(progress);
+  document.querySelectorAll('.unit').forEach(u => u.classList.remove('done'));
+  document.querySelectorAll('.checkbox').forEach(cb => cb.classList.remove('checked'));
+  updateProgress();
+}
+
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = data.map((phase, pi) => `
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(${pi})">
+        <span class="phase-badge badge-${phase.badge}">${phase.badgeLabel}</span>
+        <span class="phase-title">${phase.phase}</span>
+        <span class="phase-toggle open" id="ptoggle-${pi}">▼</span>
+      </div>
+      <div id="phase-body-${pi}">
+        ${phase.units.map(u => `
+          <div class="unit${progress[u.id] ? ' done' : ''}" data-id="${u.id}">
+            <div class="unit-header">
+              <div class="checkbox${progress[u.id] ? ' checked' : ''}" onclick="toggle('${u.id}')">
+                <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+                  <path d="M1 5L4.5 8.5L11 1" stroke="#0f1117" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="unit-title">${u.title}</span>
+              <span class="unit-expand" id="expand-${u.id}" onclick="toggleBody('${u.id}')">▼</span>
+            </div>
+            <div class="unit-body" id="body-${u.id}">
+              <div class="goal-tag">🎯 ${u.goal}</div>
+              <p>${u.desc}</p>
+              <ul>${u.points.map(p => `<li>${p.replace(/`([^`]+)`/g, '<code>$1</code>')}</li>`).join('')}</ul>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function togglePhase(pi) {
+  const body = document.getElementById('phase-body-' + pi);
+  const toggle = document.getElementById('ptoggle-' + pi);
+  const isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? '' : 'none';
+  toggle.classList.toggle('open', isHidden);
+}
+
+render();
+</script>
+</body>
+</html>
