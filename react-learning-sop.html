@@ -382,11 +382,11 @@ function render() {
     <div class="phase">
       <div class="phase-header" onclick="togglePhase(${pi})">
         <span class="phase-badge badge-${phase.badge}">${phase.badgeLabel}</span>
-        <span class="phase-title">${phase.phase}</span>
+        <span class="phase-title">${pi + 1}. ${phase.phase}</span>
         <span class="phase-toggle open" id="ptoggle-${pi}">▼</span>
       </div>
       <div id="phase-body-${pi}">
-        ${phase.units.map(u => `
+        ${phase.units.map((u, ui) => `
           <div class="unit${progress[u.id] ? ' done' : ''}" data-id="${u.id}">
             <div class="unit-header">
               <div class="checkbox${progress[u.id] ? ' checked' : ''}" onclick="toggle('${u.id}')">
@@ -394,7 +394,7 @@ function render() {
                   <path d="M1 5L4.5 8.5L11 1" stroke="#0f1117" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
-              <span class="unit-title">${u.title}</span>
+              <span class="unit-title"><span style="color:var(--muted);margin-right:0.5rem;font-size:0.82rem;">${pi + 1}.${ui + 1}</span>${u.title}</span>
               <span class="unit-expand" id="expand-${u.id}" onclick="toggleBody('${u.id}')">▼</span>
             </div>
             <div class="unit-body" id="body-${u.id}">
