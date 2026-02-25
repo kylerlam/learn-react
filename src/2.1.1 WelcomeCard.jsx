@@ -1,5 +1,5 @@
 
-function WelcomeCard(props) {
+function WelcomeCard(props) { // 上面用props，下面用props.name...：不解構 
     return (
         <div className="p-4 border rounded shadow">
             {/* 使用 props.屬性名稱 來取得內容 */}
