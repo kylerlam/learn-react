@@ -11,3 +11,6 @@ function WelcomeCard(props) {
 }
 
 export default WelcomeCard;
+
+// Props (包裹)：是由父組件寄給子組件的「包裹」。子組件是被動接收的，且不能修改包裹內容（只能讀取）。
+// State (記憶)：是組件自己的「記憶」。組件可以主動修改自己的記憶（透過 setState）。
