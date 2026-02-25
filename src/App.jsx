@@ -1,8 +1,8 @@
-import Task1_1_JSX from './Task_1.1.1_JSX'
-import Task1_1_Play from './Task_1.1.2_Play'
-import Task1_1_DataStore from './Task_1.1.3_DataStore'
-import Task1_1_ChangeColor from './Task_1.1.4_ChangeColor'
-import Task1_1_Addition from './Task_1.1.5_Addition'
+import Task1_1_JSX from './1.1.1_JSX'
+import Task1_1_Play from './1.1.2_Play'
+import Task1_1_DataStore from './1.1.3_DataStore'
+import Task1_1_ChangeColor from './1.1.4_ChangeColor'
+import Task1_1_Addition from './1.1.5_Addition'
 
 function App() {
     return (
