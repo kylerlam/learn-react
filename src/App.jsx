@@ -6,6 +6,7 @@ import Task1_1_ChangeColor from './1.1.4 ChangeColor'
 import Task1_1_Addition from './1.1.5 Addition'
 import WelcomeCard from './2.1.1 WelcomeCard'
 import TodoApp from './TodoApp'
+import TodoAppDnD from './TodoAppDnD'
 
 function App() {
     const [name, setName] = useState("小美");
@@ -28,6 +29,8 @@ function App() {
                 onNumberChange={setNumber}
             />
             <TodoApp />
+            <hr />
+            <TodoAppDnD />
         </div>
     )
 }
