@@ -74,6 +74,7 @@
   .badge-core       { background: rgba(167,139,250,0.15); color: var(--accent2); }
   .badge-pattern    { background: rgba(52,211,153,0.15);  color: var(--accent3); }
   .badge-advanced   { background: rgba(245,158,11,0.15);  color: var(--accent4); }
+  .badge-prereq     { background: rgba(251,146,60,0.15);   color: #fb923c; }
 
   .phase-title { font-weight: 600; font-size: 1.05rem; }
   .phase-toggle { margin-left: auto; color: var(--muted); font-size: 0.8rem; transition: transform .2s; }
@@ -161,6 +162,50 @@
 
 <script>
 const data = [
+  {
+    phase: "前置：必備 JS 語法自測",
+    badge: "prereq",
+    badgeLabel: "JS 基礎",
+    units: [
+      {
+        id: "js-basics",
+        title: "變數 · 箭頭函式 · 物件 · 三元運算子",
+        goal: "這些語法在 React 每行代碼都出現，必須看懂",
+        desc: "React 幾乎全程使用這幾種 JS 語法，是 JSX 和 Hooks 的基石。",
+        points: [
+          "`const` / `let`：const 宣告後不可重新賦值，React 幾乎全用 const",
+          "箭頭函式 `() => {}`：匿名函式，常用於事件處理和 map/filter 的回調",
+          "物件 `{ id: '1', text: '買牛奶' }`：React 的 state 和 props 大量使用物件",
+          "三元運算子 `條件 ? 是 : 否`：JSX 條件渲染最常見的寫法",
+        ]
+      },
+      {
+        id: "js-array",
+        title: "陣列操作 · Spread · 解構賦值",
+        goal: "陣列操作是 React 列表渲染和 State 更新的核心語法",
+        desc: "這三種語法在 React 的 state 更新、列表渲染、props 解構中無處不在。",
+        points: [
+          "`.map(item => ...)` — 把陣列轉換成 JSX 列表，React 最常見的渲染模式",
+          "`.filter(item => 條件)` — 篩選陣列，常用於刪除項目",
+          "`...` Spread 展開：`[...todos, 新項目]` 建立新陣列而不改變原陣列（Immutability）",
+          "解構賦值 `const { id, text } = todo` — Props 和物件取值的常見寫法",
+        ]
+      },
+      {
+        id: "js-async",
+        title: "非同步 async / await",
+        goal: "打 API 和操作資料庫時必用，看懂 AI 代碼的關鍵",
+        desc: "async/await 是處理非同步操作（如 fetch API）的現代語法，比 .then() 更易讀。",
+        points: [
+          "`async function fetchTodos()` — 函式加上 async 關鍵字",
+          "`const data = await fetch('/api/todos')` — await 等待操作完成",
+          "必須在 `async` 函式內才能用 `await`",
+          "搭配 try/catch 處理錯誤：`try { await... } catch(err) { ... }`",
+          "在 React 中：在 useEffect 裡定義 async 函式再呼叫，不能直接讓 useEffect 是 async",
+        ]
+      },
+    ]
+  },
   {
     phase: "階段一：看懂 JSX 語法",
     badge: "foundation",
